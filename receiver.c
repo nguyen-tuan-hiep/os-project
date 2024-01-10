@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Tạo semaphore hoặc sử dụng semaphore đã tạo
-    sem = sem_open(SEM_NAME, 0);
+    sem = sem_open(SEM_NAME, O_RDWR | O_CREAT, 0666, 1);
     if (sem == SEM_FAILED) {
         perror("sem_open");
         exit(1);
@@ -99,6 +99,6 @@ int main(int argc, char *argv[]) {
                 printf("Invalid choice. Please enter a valid option.\n");
         }
     }
-
+    sem_close(sem);
     return 0;
 }
