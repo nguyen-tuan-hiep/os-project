@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -lrt  # Thêm -lrt để sử dụng các hàm IPC
+CFLAGS = -Wall -pthread
 
 all: sender receiver
 

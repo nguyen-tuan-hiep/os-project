@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
             case 1:
                 // Đợi cho đến khi có thông điệp sẵn sàng
                 sem_wait(sem);
-                printf("Received message: %s", shmaddr);
+                printf("Received message: %s\n\n", shmaddr);
                 break;
 
             case 2:
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                 fwrite(shmaddr, 1, strlen(shmaddr), file);
                 fclose(file);
 
-                printf("File received and saved at: %s\n", filename);
+                printf("File received and saved at: %s\n\n", filename);
 
                 receive_file++;
 

@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
                 // Báo hiệu cho receiver rằng thông điệp đã sẵn sàng
                 sem_post(sem);
-                printf("Message sent: %s", shmaddr);
+                printf("Message sent: %s\n", shmaddr);
                 break;
 
             case 2: {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
                 fseek(file, 0, SEEK_SET);
 
                 if (file_size > SHM_SIZE) {
-                    printf("File size exceeds the shared memory size.\n");
+                    printf("File size exceeds the shared memory size.\n\n");
                     fclose(file);
                     break;
                 }
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 
                 // Báo hiệu cho receiver rằng tệp tin đã sẵn sàng
                 sem_post(sem);
-                printf("File sent: %s\n", input_buffer);
+                printf("File sent: %s\n\n", input_buffer);
                 break;
             }
 
