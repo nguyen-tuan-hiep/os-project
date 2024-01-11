@@ -19,14 +19,14 @@ int main(int argc, char *argv[]) {
     sem_t *sem;
 
     // Tạo hoặc truy cập vùng nhớ chia sẻ
-    key = ftok(".", 'S');  // Sử dụng chung key như sender
-    if ((shmid = shmget(key, SHM_SIZE, IPC_CREAT | 0666)) == -1) {
+    key = ftok(".", 'S');  // Tạo key IPC từ tên file và một ký tự S
+    if ((shmid = shmget(key, SHM_SIZE, IPC_CREAT | 0666)) == -1) {  // IPC_CREAT: Tạo vùng nhớ chia sẻ nếu chưa tồn tại, 0666: Quyền truy cập vùng nhớ chia sẻ
         perror("shmget");
         exit(1);
     }
 
     // Kết nối vùng nhớ chia sẻ vào không gian bộ nhớ của tiến trình
-    shmaddr = shmat(shmid, NULL, 0);
+    shmaddr = shmat(shmid, NULL, 0);    //Map vùng nhớ chia sẻ vào không gian bộ nhớ của tiến trình
     if (shmaddr == (char *)-1) {
         perror("shmat");
         exit(1);
@@ -53,10 +53,8 @@ int main(int argc, char *argv[]) {
         switch (choice) {
             case 1:
                 printf("Enter a message to send: ");
-                fgets(shmaddr, SHM_SIZE, stdin);
-
-                // Báo hiệu cho receiver rằng thông điệp đã sẵn sàng
-                sem_post(sem);
+                fgets(shmaddr, SHM_SIZE, stdin);    // Đọc chuỗi từ stdin và lưu vào vùng nhớ chia sẻ
+                sem_post(sem);  // Báo hiệu (signal) qua semaphore để thông báo cho receiver biết rằng có thông điệp mới.
                 printf("Message sent: %s\n", shmaddr);
                 break;
 
@@ -74,8 +72,8 @@ int main(int argc, char *argv[]) {
                     break;
                 }
 
-                fseek(file, 0, SEEK_END);
-                long file_size = ftell(file);
+                fseek(file, 0, SEEK_END);   // Đưa con trỏ tệp tin về cuối tệp tin để tính kích thước
+                long file_size = ftell(file);   // Lấy kích thước file
                 fseek(file, 0, SEEK_SET);
 
                 if (file_size > SHM_SIZE) {
@@ -84,10 +82,10 @@ int main(int argc, char *argv[]) {
                     break;
                 }
 
-                fread(shmaddr, 1, file_size, file);
+                fread(shmaddr, 1, file_size, file);     // Đọc nội dung tệp tin và lưu vào vùng nhớ chia sẻ
                 fclose(file);
 
-                // Báo hiệu cho receiver rằng tệp tin đã sẵn sàng
+                // Báo hiệu (signal) cho receiver rằng tệp tin đã sẵn sàng
                 sem_post(sem);
                 printf("File sent: %s\n\n", input_buffer);
                 break;
@@ -97,10 +95,10 @@ int main(int argc, char *argv[]) {
                 // Ngắt kết nối vùng nhớ chia sẻ
                 shmdt(shmaddr);
 
-                // Xóa vùng nhớ chia sẻ (tùy chọn)
+                // Xóa vùng nhớ chia sẻ (optional)
                 shmctl(shmid, IPC_RMID, NULL);
 
-                // Đóng semaphore (tùy chọn)
+                // Đóng semaphore
                 sem_close(sem);
                 exit(0);
 

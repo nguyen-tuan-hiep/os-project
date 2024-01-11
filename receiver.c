@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     char filename[SHM_SIZE];
 
-    // Tạo thư mục receive_files
+    // Tạo thư mục receive_files, 0777: Quyền truy cập thư mục
     mkdir(RECEIVE_DIR, 0777);
 
     while (1) {
@@ -78,12 +78,12 @@ int main(int argc, char *argv[]) {
                     break;
                 }
 
-                fwrite(shmaddr, 1, strlen(shmaddr), file);
+                fwrite(shmaddr, 1, strlen(shmaddr), file);  // Ghi nội dung từ shared memory vào file
                 fclose(file);
 
                 printf("File received and saved at: %s\n\n", filename);
 
-                receive_file++;
+                receive_file++; // Tăng số lượng file đã nhận
 
                 break;
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
                 // Ngắt kết nối vùng nhớ chia sẻ
                 shmdt(shmaddr);
 
-                // Đóng semaphore (tùy chọn)
+                // Đóng semaphore (optional)
                 sem_close(sem);
                 exit(0);
 
